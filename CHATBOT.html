@@ -3,35 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chat Regi - SMK 4 Kendari</title>
+    <title>AI Asisten RPL - SMK 4 Kendari</title>
     <style>
         * { box-sizing: border-box; }
-        body { font-family: sans-serif; background: #121212; color: #e0e0e0; margin: 0; display: flex; flex-direction: column; height: 100vh; }
-        header { background: #1f1f1f; padding: 15px; text-align: center; border-bottom: 2px solid #333; font-weight: bold; color: #00d4ff; }
-        #chatBox { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .msg { padding: 10px 15px; border-radius: 15px; max-width: 85%; line-height: 1.5; }
-        .user { background: #0056b3; align-self: flex-end; color: white; }
-        .ai { background: #333; align-self: flex-start; border: 1px solid #444; }
-        .input-area { background: #1f1f1f; padding: 15px; display: flex; gap: 10px; }
-        input { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #444; background: #2c2c2c; color: white; }
-        button { background: #00d4ff; color: #000; border: none; padding: 10px 20px; border-radius: 25px; font-weight: bold; }
-        .status { font-size: 11px; color: #888; text-align: center; padding: 5px; }
+        body { font-family: 'Google Sans', 'Segoe UI', sans-serif; background: #131314; color: #e3e3e3; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        header { padding: 10px 20px; font-weight: bold; color: #a8b0c0; text-align: right; font-size: 14px; border-bottom: 1px solid #333; }
+        #chatBox { flex: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth; }
+        .msg { padding: 15px 25px; max-width: 80%; line-height: 1.6; }
+        .user { background: #004a77; align-self: flex-end; color: white; border-radius: 20px 20px 2px 20px; font-size: 14px; }
+        .ai { background: #1e1f20; align-self: flex-start; color: #e3e3e3; border-radius: 20px 20px 20px 2px; border: 1px solid #3c4043; font-size: 15px; }
+        #statusArea { font-size: 11px; color: #80868b; text-align: center; padding: 5px; }
+        .input-area { background: #1e1f20; padding: 10px 20px; display: flex; gap: 10px; border-radius: 30px; margin: 10px; border: 1px solid #3c4043; align-items: center; }
+        input { flex: 1; padding: 12px; border: none; background: transparent; color: white; outline: none; font-size: 15px; }
+        button { background: transparent; border: none; color: #00d4ff; font-weight: bold; font-size: 20px; cursor: pointer; padding: 0 10px; }
+        button:disabled { color: #555; cursor: not-allowed; }
+        /* Ikon Kirim ala Gemini */
+        .send-icon:after { content: '\27A4'; }
     </style>
 </head>
 <body>
 
-<header>AI ASISTEN REGI (SMK 4 KENDARI)</header>
-<div id="chatBox"><div class="msg ai">Tes ketik "Woi" Gi, kalau masih error kabari!</div></div>
-<div class="status" id="statusLine">Status: Siap</div>
+<header>AI ASISTEN (SMK 4 KENDARI)</header>
+<div id="chatBox"><div class="msg ai">Tes ketik "Woi", harusnya lancar jaya ala anak RPL Kendari!</div></div>
+<div id="statusArea"><div class="status" id="statusLine">Status: Siap</div></div>
 <div class="input-area">
     <input type="text" id="userInput" placeholder="Ketik pesan..." autocomplete="off">
-    <button id="sendBtn" onclick="mulaiKirim()">KIRIM</button>
+    <button id="sendBtn" class="send-icon" onclick="mulaiKirim()"></button>
 </div>
 
 <script>
-    // 1. PASTIKAN API KEY INI BENER!
-    const MY_KEY = "AIzaSyCyMMEY1hRPWHDopJvkiLqoAgTOo500YT4";
-
+    // KUNCI SAKTI BARU LO, GI!
+    const MY_KEY = "AIzaSyC36lu9NtugxCNp01HB8lDsGEyxjs5zE08";
     
     const chatBox = document.getElementById('chatBox');
     const statusLine = document.getElementById('statusLine');
@@ -55,31 +57,30 @@
         btn.disabled = true;
         statusLine.innerText = "Status: Menghubungi Google...";
 
-        // PAKE VERSI 1.5 FLASH (LEBIH STABIL BUAT GITHUB)
-       const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${MY_KEY}`;
+        // PAKAI MODEL 1.5 FLASH (VERSI TERBARU & STABIL)
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${MY_KEY}`;
 
         try {
             const respon = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: "Gaya bicara gaul SMK: " + pesan }] }]
+                    contents: [{ parts: [{ text: "Gaya bicara gaul SMK Kendari: " + pesan }] }]
                 })
             });
 
             const data = await respon.json();
             
             if (data.error) {
-                // BIAR KITA TAU ERRORNYA APA
                 addChat('ai', "Error dari Google: " + data.error.message);
-            } else if (data.candidates) {
+            } else if (data.candidates && data.candidates[0].content) {
                 const balasan = data.candidates[0].content.parts[0].text;
                 addChat('ai', balasan);
             } else {
                 addChat('ai', "Respon aneh, Gi. Cek log konsol.");
             }
         } catch (err) {
-            addChat('ai', "Koneksi mental! Cek kuota atau sinyal.");
+            addChat('ai', "Koneksi mental! Cek kuota lo.");
         } finally {
             btn.disabled = false;
             statusLine.innerText = "Status: Siap";
