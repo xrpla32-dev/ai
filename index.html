@@ -66,17 +66,21 @@
 
 
         try {
-            const respon = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: "Lo adalah asisten pribadi Regi, siswa RPL SMK 4 Kendari. Jawab dengan gaya asik, gaul, pinter koding, dan pake bahasa Indonesia. Pesan Regi: " + pesan
-                        }]
-                    }]
-                })
-            });
+            // --- GANTI BAGIAN FETCH LO PAKE INI ---
+const respon = await fetch(url, {
+    method: "POST",
+    headers: { 
+        "Content-Type": "application/json" 
+    },
+    body: JSON.stringify({
+        contents: [{
+            parts: [{
+                text: "Lo adalah asisten pribadi Regi (SMK 4 Kendari). Jawab yang asik: " + pesan
+            }]
+        }]
+    })
+});
+
 
             const data = await respon.json();
             
