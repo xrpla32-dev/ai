@@ -30,7 +30,8 @@
 
 <script>
     // 1. PASTIKAN API KEY INI BENER!
-    const MY_KEY = "AIzaSyCyMMEY1hRPWHDopJvkiLqoAgTOo5OOYT4";
+    const MY_KEY = "AIzaSyCyMMEY1hRPWHDopJvkiLqoAgTOo500YT4";
+
     
     const chatBox = document.getElementById('chatBox');
     const statusLine = document.getElementById('statusLine');
@@ -55,7 +56,7 @@
         statusLine.innerText = "Status: Menghubungi Google...";
 
         // PAKE VERSI 1.5 FLASH (LEBIH STABIL BUAT GITHUB)
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${MY_KEY}`;
+       const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${MY_KEY}`;
 
         try {
             const respon = await fetch(url, {
