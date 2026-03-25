@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chat - SMK 4 Kendari</title>
+    <title>AI Chat</title>
     <style>
         * { box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; background: #131314; color: #e3e3e3; margin: 0; display: flex; flex-direction: column; height: 100vh; }
@@ -36,7 +36,7 @@
 </div>
 
 <script>
-    // KUNCI SAKTI BARU LO
+    // 1. KUNCI TERBARU LO (SUDAH FIX 00 BUKAN OO)
     const MY_KEY = "AIzaSyC36lu9NtugxCNp01HB8lDsGEyxjs5zE08";
     
     const chatBox = document.getElementById('chatBox');
@@ -64,8 +64,9 @@
         addChat('user', pesan);
         input.value = '';
         btn.disabled = true;
-        statusLine.innerText = "Status: Berpikir...";
+        statusLine.innerText = "Status: Menghubungi Google...";
 
+        // PAKAI MODEL 1.5 FLASH (VERSI TERBARU & STABIL)
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${MY_KEY}`;
 
         try {
@@ -73,18 +74,22 @@
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: "Jawab dengan asik, pinter koding, dan jangan sebut nama user. Pesan: " + pesan }] }]
+                    contents: [{ parts: [{ text: "Gaya bicara gaul SMK Kendari, jangan panggil nama user: " + pesan }] }]
                 })
             });
 
             const data = await respon.json();
-            if (data.candidates) {
-                addChat('ai', data.candidates[0].content.parts[0].text);
+            
+            if (data.candidates && data.candidates[0].content) {
+                const balasan = data.candidates[0].content.parts[0].text;
+                addChat('ai', balasan);
+            } else if (data.error) {
+                addChat('ai', "Google Bilang: " + data.error.message);
             } else {
-                addChat('ai', "Waduh, koneksi ke Google lagi macet. Coba lagi!");
+                addChat('ai', "Respon aneh, Gi. Cek API Studio!");
             }
         } catch (err) {
-            addChat('ai', "Gagal total! Cek kuota lo.");
+            addChat('ai', "Gagal total! Cek kuota atau sinyal lo.");
         } finally {
             btn.disabled = false;
             statusLine.innerText = "Status: Siap";
