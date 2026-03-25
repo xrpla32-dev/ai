@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -7,36 +6,30 @@
     <title>AI Chat Regi - SMK 4 Kendari</title>
     <style>
         * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #121212; color: #e0e0e0; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+        body { font-family: sans-serif; background: #121212; color: #e0e0e0; margin: 0; display: flex; flex-direction: column; height: 100vh; }
         header { background: #1f1f1f; padding: 15px; text-align: center; border-bottom: 2px solid #333; font-weight: bold; color: #00d4ff; }
         #chatBox { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .msg { padding: 10px 15px; border-radius: 15px; max-width: 85%; line-height: 1.5; word-wrap: break-word; }
-        .user { background: #0056b3; align-self: flex-end; color: white; border-bottom-right-radius: 2px; }
-        .ai { background: #333; align-self: flex-start; color: #e0e0e0; border-bottom-left-radius: 2px; border: 1px solid #444; }
-        .input-area { background: #1f1f1f; padding: 15px; display: flex; gap: 10px; border-top: 1px solid #333; }
-        input { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #444; background: #2c2c2c; color: white; outline: none; }
-        button { background: #00d4ff; color: #000; border: none; padding: 10px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; }
-        button:disabled { background: #555; cursor: not-allowed; }
-        .status { font-size: 12px; color: #888; text-align: center; padding: 5px; }
+        .msg { padding: 10px 15px; border-radius: 15px; max-width: 85%; line-height: 1.5; }
+        .user { background: #0056b3; align-self: flex-end; color: white; }
+        .ai { background: #333; align-self: flex-start; border: 1px solid #444; }
+        .input-area { background: #1f1f1f; padding: 15px; display: flex; gap: 10px; }
+        input { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #444; background: #2c2c2c; color: white; }
+        button { background: #00d4ff; color: #000; border: none; padding: 10px 20px; border-radius: 25px; font-weight: bold; }
+        .status { font-size: 11px; color: #888; text-align: center; padding: 5px; }
     </style>
 </head>
 <body>
 
 <header>AI ASISTEN REGI (SMK 4 KENDARI)</header>
-
-<div id="chatBox">
-    <div class="msg ai">Halo Regi! Gue udah stand by nih. Mau nanya apa soal RPL atau kodingan?</div>
-</div>
-
+<div id="chatBox"><div class="msg ai">Tes ketik "Woi" Gi, kalau masih error kabari!</div></div>
 <div class="status" id="statusLine">Status: Siap</div>
-
 <div class="input-area">
-    <input type="text" id="userInput" placeholder="Ketik pesan di sini..." autocomplete="off">
+    <input type="text" id="userInput" placeholder="Ketik pesan..." autocomplete="off">
     <button id="sendBtn" onclick="mulaiKirim()">KIRIM</button>
 </div>
 
 <script>
-    // 1. ISI API KEY LO DI SINI
+    // 1. PASTIKAN API KEY INI BENER!
     const MY_KEY = "AIzaSyCyMMEY1hRPWHDopJvkiLqoAgTOo5OOYT4";
     
     const chatBox = document.getElementById('chatBox');
@@ -44,7 +37,6 @@
     const input = document.getElementById('userInput');
     const btn = document.getElementById('sendBtn');
 
-    // Fungsi nambah balon chat
     function addChat(role, text) {
         const div = document.createElement('div');
         div.className = 'msg ' + role;
@@ -60,52 +52,39 @@
         addChat('user', pesan);
         input.value = '';
         btn.disabled = true;
-        statusLine.innerText = "Status: Gemini lagi mikir...";
+        statusLine.innerText = "Status: Menghubungi Google...";
 
-    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${MY_KEY}`;
-
+        // PAKE VERSI 1.5 FLASH (LEBIH STABIL BUAT GITHUB)
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${MY_KEY}`;
 
         try {
-            // --- GANTI BAGIAN FETCH LO PAKE INI ---
-const respon = await fetch(url, {
-    method: "POST",
-    headers: { 
-        "Content-Type": "application/json" 
-    },
-    body: JSON.stringify({
-        contents: [{
-            parts: [{
-                text: "Lo adalah asisten pribadi Regi (SMK 4 Kendari). Jawab yang asik: " + pesan
-            }]
-        }]
-    })
-});
-
+            const respon = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: "Gaya bicara gaul SMK: " + pesan }] }]
+                })
+            });
 
             const data = await respon.json();
             
-            if (data.candidates && data.candidates[0].content) {
+            if (data.error) {
+                // BIAR KITA TAU ERRORNYA APA
+                addChat('ai', "Error dari Google: " + data.error.message);
+            } else if (data.candidates) {
                 const balasan = data.candidates[0].content.parts[0].text;
                 addChat('ai', balasan);
-                statusLine.innerText = "Status: Siap";
             } else {
-                throw new Error("Respon kosong");
+                addChat('ai', "Respon aneh, Gi. Cek log konsol.");
             }
-
         } catch (err) {
-            console.error(err);
-            addChat('ai', "Waduh Gi, ada error! Cek internet lo atau pastiin API KEY bener. Jangan lupa dicas HP-nya!");
-            statusLine.innerText = "Status: Error Terjadi";
+            addChat('ai', "Koneksi mental! Cek kuota atau sinyal.");
         } finally {
             btn.disabled = false;
+            statusLine.innerText = "Status: Siap";
         }
     }
-
-    // Biar bisa enter
-    input.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") mulaiKirim();
-    });
+    input.addEventListener("keypress", (e) => { if (e.key === "Enter") mulaiKirim(); });
 </script>
-
 </body>
 </html>
