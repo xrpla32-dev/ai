@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat Regi - SMK 4 Kendari</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #121212; color: #e0e0e0; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+        header { background: #1f1f1f; padding: 15px; text-align: center; border-bottom: 2px solid #333; font-weight: bold; color: #00d4ff; }
+        #chatBox { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 10px 15px; border-radius: 15px; max-width: 85%; line-height: 1.5; word-wrap: break-word; }
+        .user { background: #0056b3; align-self: flex-end; color: white; border-bottom-right-radius: 2px; }
+        .ai { background: #333; align-self: flex-start; color: #e0e0e0; border-bottom-left-radius: 2px; border: 1px solid #444; }
+        .input-area { background: #1f1f1f; padding: 15px; display: flex; gap: 10px; border-top: 1px solid #333; }
+        input { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #444; background: #2c2c2c; color: white; outline: none; }
+        button { background: #00d4ff; color: #000; border: none; padding: 10px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; }
+        button:disabled { background: #555; cursor: not-allowed; }
+        .status { font-size: 12px; color: #888; text-align: center; padding: 5px; }
+    </style>
+</head>
+<body>
+
+<header>AI ASISTEN REGI (SMK 4 KENDARI)</header>
+
+<div id="chatBox">
+    <div class="msg ai">Halo Regi! Gue udah stand by nih. Mau nanya apa soal RPL atau kodingan?</div>
+</div>
+
+<div class="status" id="statusLine">Status: Siap</div>
+
+<div class="input-area">
+    <input type="text" id="userInput" placeholder="Ketik pesan di sini..." autocomplete="off">
+    <button id="sendBtn" onclick="mulaiKirim()">KIRIM</button>
+</div>
+
+<script>
+    // 1. ISI API KEY LO DI SINI
+    const MY_KEY = "AIzaSyCyMMEY1hRPWHDopJvkiLqoAgTOo5OOYT4";
+    
+    const chatBox = document.getElementById('chatBox');
+    const statusLine = document.getElementById('statusLine');
+    const input = document.getElementById('userInput');
+    const btn = document.getElementById('sendBtn');
+
+    // Fungsi nambah balon chat
+    function addChat(role, text) {
+        const div = document.createElement('div');
+        div.className = 'msg ' + role;
+        div.innerText = text;
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    async function mulaiKirim() {
+        const pesan = input.value.trim();
+        if (!pesan) return;
+
+        addChat('user', pesan);
+        input.value = '';
+        btn.disabled = true;
+        statusLine.innerText = "Status: Gemini lagi mikir...";
+
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${MY_KEY}`;
+
+
+        try {
+            const respon = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: "Lo adalah asisten pribadi Regi, siswa RPL SMK 4 Kendari. Jawab dengan gaya asik, gaul, pinter koding, dan pake bahasa Indonesia. Pesan Regi: " + pesan
+                        }]
+                    }]
+                })
+            });
+
+            const data = await respon.json();
+            
+            if (data.candidates && data.candidates[0].content) {
+                const balasan = data.candidates[0].content.parts[0].text;
+                addChat('ai', balasan);
+                statusLine.innerText = "Status: Siap";
+            } else {
+                throw new Error("Respon kosong");
+            }
+
+        } catch (err) {
+            console.error(err);
+            addChat('ai', "Waduh Gi, ada error! Cek internet lo atau pastiin API KEY bener. Jangan lupa dicas HP-nya!");
+            statusLine.innerText = "Status: Error Terjadi";
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    // Biar bisa enter
+    input.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") mulaiKirim();
+    });
+</script>
+
+</body>
+</html>
