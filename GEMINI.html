@@ -6,53 +6,25 @@
     <title>AI Chat - SMK 4 Kendari</title>
     <style>
         * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #131314; color: #e3e3e3; margin: 0; display: flex; flex-direction: column; height: 100vh; }
-        
-        /* Header */
-        header { padding: 15px 20px; font-weight: 500; color: #8e918f; border-bottom: 1px solid #444746; font-size: 14px; }
-
-        /* Area Chat */
+        body { font-family: 'Segoe UI', sans-serif; background: #131314; color: #e3e3e3; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+        header { padding: 15px 20px; font-weight: 500; color: #8e918f; border-bottom: 1px solid #444746; font-size: 14px; text-align: right; }
         #chatBox { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 24px; }
-        .msg { max-width: 85%; line-height: 1.6; font-size: 15px; position: relative; }
-        
-        /* Gaya Balon Chat User */
-        .user { align-self: flex-end; background: #004a77; color: #e3e3e3; padding: 12px 20px; border-radius: 18px 18px 2px 18px; }
-        
-        /* Gaya Balon Chat AI */
-        .ai { align-self: flex-start; background: transparent; padding: 0; border-radius: 0; max-width: 90%; }
-        .ai-content { display: flex; gap: 12px; }
+        .msg { max-width: 85%; line-height: 1.6; font-size: 15px; }
+        .user { align-self: flex-end; background: #004a77; padding: 12px 20px; border-radius: 18px 18px 2px 18px; }
+        .ai { align-self: flex-start; display: flex; gap: 12px; }
         .ai-icon { width: 30px; height: 30px; background: linear-gradient(45deg, #4285f4, #9b72cb, #d96570); border-radius: 50%; flex-shrink: 0; }
-
-        /* Container Input (Kolom Pesan di Bawah) */
         .input-container { padding: 20px; background: #131314; }
-        .input-wrapper { 
-            max-width: 800px; margin: 0 auto; display: flex; align-items: center; 
-            background: #1e1f20; border-radius: 28px; padding: 8px 16px; border: 1px solid #444746;
-        }
-        input { 
-            flex: 1; background: transparent; border: none; color: #e3e3e3; 
-            padding: 12px; font-size: 16px; outline: none; 
-        }
-        button { 
-            background: transparent; border: none; color: #a8c7fa; 
-            cursor: pointer; padding: 8px; font-size: 20px; font-weight: bold;
-        }
-        button:disabled { color: #444746; }
-
+        .input-wrapper { max-width: 800px; margin: 0 auto; display: flex; align-items: center; background: #1e1f20; border-radius: 28px; padding: 8px 16px; border: 1px solid #444746; }
+        input { flex: 1; background: transparent; border: none; color: #e3e3e3; padding: 12px; font-size: 16px; outline: none; }
+        button { background: transparent; border: none; color: #a8c7fa; cursor: pointer; padding: 8px; font-size: 20px; }
         .status { font-size: 12px; color: #8e918f; text-align: center; margin-top: 8px; }
     </style>
 </head>
 <body>
 
-<header>Gemini RPL Edition</header>
-
+<header>AI ASISTEN RPL</header>
 <div id="chatBox">
-    <div class="msg ai">
-        <div class="ai-content">
-            <div class="ai-icon"></div>
-            <div>Halo! Ada yang bisa dibantu soal kodingan atau tugas SMK hari ini?</div>
-        </div>
-    </div>
+    <div class="ai"><div class="ai-icon"></div><div>Halo! Ada yang bisa dibantu soal kodingan hari ini?</div></div>
 </div>
 
 <div class="input-container">
@@ -64,7 +36,7 @@
 </div>
 
 <script>
-    // API KEY BARU LO YANG FRESH
+    // KUNCI SAKTI BARU LO
     const MY_KEY = "AIzaSyC36lu9NtugxCNp01HB8lDsGEyxjs5zE08";
     
     const chatBox = document.getElementById('chatBox');
@@ -74,14 +46,13 @@
 
     function addChat(role, text) {
         const div = document.createElement('div');
-        div.className = 'msg ' + role;
-        
+        div.className = role;
         if (role === 'ai') {
-            div.innerHTML = `<div class="ai-content"><div class="ai-icon"></div><div>${text}</div></div>`;
+            div.innerHTML = `<div class="ai-icon"></div><div>${text}</div>`;
         } else {
+            div.className = 'msg user';
             div.innerText = text;
         }
-        
         chatBox.appendChild(div);
         chatBox.scrollTop = chatBox.scrollHeight;
     }
@@ -102,30 +73,24 @@
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: "Jawab dengan asik, gaul, pinter koding, dan jangan sebut nama user. Pesan: " + pesan }] }]
+                    contents: [{ parts: [{ text: "Jawab dengan asik, pinter koding, dan jangan sebut nama user. Pesan: " + pesan }] }]
                 })
             });
 
             const data = await respon.json();
-            
             if (data.candidates) {
-                const balasan = data.candidates[0].content.parts[0].text;
-                addChat('ai', balasan);
+                addChat('ai', data.candidates[0].content.parts[0].text);
             } else {
-                addChat('ai', "Waduh, ada kendala koneksi ke pusat. Coba lagi, Gi!");
+                addChat('ai', "Waduh, koneksi ke Google lagi macet. Coba lagi!");
             }
         } catch (err) {
-            addChat('ai', "Error koneksi. Cek kuota lo!");
+            addChat('ai', "Gagal total! Cek kuota lo.");
         } finally {
             btn.disabled = false;
             statusLine.innerText = "Status: Siap";
         }
     }
-
-    input.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") mulaiKirim();
-    });
+    input.addEventListener("keypress", (e) => { if (e.key === "Enter") mulaiKirim(); });
 </script>
-
 </body>
 </html>
