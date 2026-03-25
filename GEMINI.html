@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chat</title>
+    <title>AI Chat - SMK 4 Kendari</title>
     <style>
         * { box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; background: #131314; color: #e3e3e3; margin: 0; display: flex; flex-direction: column; height: 100vh; }
@@ -22,9 +22,9 @@
 </head>
 <body>
 
-<header>AI ASISTEN RPL</header>
+<header>Gemini RPL Edition</header>
 <div id="chatBox">
-    <div class="ai"><div class="ai-icon"></div><div>Halo! Ada yang bisa dibantu soal kodingan hari ini?</div></div>
+    <div class="ai"><div class="ai-icon"></div><div>Halo! Ada yang bisa dibantu soal kodingan atau tugas hari ini?</div></div>
 </div>
 
 <div class="input-container">
@@ -36,7 +36,7 @@
 </div>
 
 <script>
-    // 1. KUNCI TERBARU LO (SUDAH FIX 00 BUKAN OO)
+    // KUNCI SAKTI BARU LO (PASTIKAN TIDAK ADA TYPO)
     const MY_KEY = "AIzaSyC36lu9NtugxCNp01HB8lDsGEyxjs5zE08";
     
     const chatBox = document.getElementById('chatBox');
@@ -64,17 +64,17 @@
         addChat('user', pesan);
         input.value = '';
         btn.disabled = true;
-        statusLine.innerText = "Status: Menghubungi Google...";
+        statusLine.innerText = "Status: Berpikir...";
 
-        // PAKAI MODEL 1.5 FLASH (VERSI TERBARU & STABIL)
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${MY_KEY}`;
+        // GANTI KE VERSI v1 DAN MODEL gemini-1.5-flash-latest
+        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${MY_KEY}`;
 
         try {
             const respon = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: "Gaya bicara gaul SMK Kendari, jangan panggil nama user: " + pesan }] }]
+                    contents: [{ parts: [{ text: "Jawab dengan asik, pinter koding, dan jangan sebut nama user. Pesan: " + pesan }] }]
                 })
             });
 
@@ -86,10 +86,10 @@
             } else if (data.error) {
                 addChat('ai', "Google Bilang: " + data.error.message);
             } else {
-                addChat('ai', "Respon aneh, Gi. Cek API Studio!");
+                addChat('ai', "Waduh, respon kosong. Cek kuota API lo!");
             }
         } catch (err) {
-            addChat('ai', "Gagal total! Cek kuota atau sinyal lo.");
+            addChat('ai', "Gagal total! Cek internet lo, Gi.");
         } finally {
             btn.disabled = false;
             statusLine.innerText = "Status: Siap";
