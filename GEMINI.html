@@ -36,7 +36,7 @@
 </div>
 
 <script>
-    // KUNCI SAKTI BARU LO (PASTIKAN TIDAK ADA TYPO)
+    // API KEY BARU LO YANG FRESH
     const MY_KEY = "AIzaSyC36lu9NtugxCNp01HB8lDsGEyxjs5zE08";
     
     const chatBox = document.getElementById('chatBox');
@@ -66,7 +66,7 @@
         btn.disabled = true;
         statusLine.innerText = "Status: Berpikir...";
 
-        // GANTI KE VERSI v1 DAN MODEL gemini-1.5-flash-latest
+        // INI DIA PERBAIKANNYA: PAKAI v1 (BUKAN v1beta)
         const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${MY_KEY}`;
 
         try {
@@ -86,7 +86,7 @@
             } else if (data.error) {
                 addChat('ai', "Google Bilang: " + data.error.message);
             } else {
-                addChat('ai', "Waduh, respon kosong. Cek kuota API lo!");
+                addChat('ai', "Waduh, respon kosong. Cek API Studio!");
             }
         } catch (err) {
             addChat('ai', "Gagal total! Cek internet lo, Gi.");
